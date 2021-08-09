@@ -31,10 +31,10 @@ Creating the database structure and fill in available information.
  
 Examples
 ---------
-![](database_structure.jpg)
-![](creating_db.jpg)
-![](query_1.jpg)
-![](query_2.jpg)
+![](pics/database_structure.jpg)
+![](pics/creating_db.jpg)
+![](pics/query_1.jpg)
+![](pics/query_2.jpg)
 
 Requirements
 ------------
