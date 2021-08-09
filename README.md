@@ -1,6 +1,6 @@
 # Managing your 'Garage Sale' with SQLite
 
-![](/pics/garage_sale.jpg)
+![](/pics/garage_sale.jpeg)
 
 This repository documents creating a SQLite database and several queries. It was elaborated by  Sarah Dutschke. The information presented here is not approved for any kind of commercial use.
 
@@ -29,12 +29,12 @@ Creating the database structure and fill in available information.
  ### Milestone 3
  Queries to answer questions on the status quo.
  
-Example plots
+Examples
 ---------
-![](database_structure.png)
-![](creating_db.png)
-![](query_1.png)
-![](query_2.png)
+![](database_structure.jpg)
+![](creating_db.jpg)
+![](query_1.jpg)
+![](query_2.jpg)
 
 Requirements
 ------------
@@ -43,6 +43,6 @@ This project has been completed in DBeaver.
 Repository Structure
 ------------
     ├── README.md       <- top-level README file for anybody interested in this project
-    ├── sqlite_files    <- one sqlite_file for each Milestone
+    ├── sqlite_files    <- XXXX one sqlite_file for each Milestone
     ├── data            <- csv files, created based on each of the notebooks
-    ├── pics            <- jpegs and pngs for visualization of the readme.
+    └── pics            <- jpegs and pngs for visualization of the readme.
