@@ -3,3 +3,5 @@ garage_sale.db
 garage_sale.sqlite
 ~$SQL_database - 20210708.xlsx
 SQL_database - 20210708.xlsx
+sqlite_files/
+garage_sale_2.sqlite
