@@ -1,0 +1,197 @@
+-----------------------------------
+-- MILESTONE 3 - Various queries --
+-----------------------------------
+--- 1) How much did I earn in total?
+SELECT SUM(price_sale)
+FROM sales s;
+
+--- 2) How much did I earn in June?
+SELECT SUM(price_sale)
+FROM sales s 
+WHERE date_sale BETWEEN "2021-06-01" AND "2021-06-30";
+--> 127 CHF gained in June
+
+--- 3) How much did I earn by month and year
+---- Option 1 by month
+SELECT strftime('%m', date_sale) as Month, SUM(price_sale) as Turnover
+FROM sales
+GROUP BY strftime('%m', date_sale);
+---- Option 2 by month and year
+SELECT date(date_sale, 'start of month'), sum(price_sale)
+FROM    sales s2 
+GROUP BY date(date_sale, 'start of month');
+
+--- 4) What items were sold with the highest sales price?
+SELECT s.sales_id, description_short, price_offered, s.price_sale
+FROM item_for_sale ifs
+JOIN sales s ON ifs.fk_sales = s.sales_id 
+WHERE s.price_sale = (SELECT MAX(s.price_sale) FROM sales s);
+
+--- 5) TBC Compare the offered price and the selling price, sort desceding order and calculate success rate of price_sale vs. price_offered
+---- Option 1: simple
+SELECT s.sales_id, SUM(price_offered), s.price_sale
+FROM item_for_sale ifs
+JOIN sales s ON ifs.fk_sales = s.sales_id
+GROUP BY s.sales_id;
+---- Option 2: more details with "price success" and number of items sold
+SELECT s.sales_id, description_short, COUNT(item_id) as "no_items", s.price_sale, SUM(price_offered) as "price_offered_all", 
+	ROUND(s.price_sale/SUM(price_offered)*100) || " %" AS "price_success_%"
+FROM item_for_sale ifs
+JOIN sales s ON ifs.fk_sales = s.sales_id
+GROUP BY s.sales_id
+ORDER BY price_offered_all DESC;
+
+--- 6) Which items did I sell at a higher than the original price?
+SELECT s.sales_id, description_short, COUNT(item_id) as "no_items", s.price_sale, SUM(price_offered) as "price_offered_all", 
+	ROUND(s.price_sale/SUM(price_offered)*100) || " %" AS "price_success_%"
+FROM item_for_sale ifs
+JOIN sales s ON ifs.fk_sales = s.sales_id
+GROUP BY s.sales_id
+HAVING ROUND(s.price_sale/SUM(price_offered)*100)> 100;
+
+--- 7) Show me the max, average, total sales per month and the running monthly total
+---- Option 1: with CTE
+WITH monthly_sales AS (
+	SELECT STRFTIME('%Y-%m', s.date_sale) AS year_month,
+			MAX(s.price_sale) OVER(PARTITION BY STRFTIME('%Y-%m', s.date_sale)) AS max_total,
+			ROUND(AVG(s.price_sale) OVER(PARTITION BY STRFTIME('%Y-%m', s.date_sale)),0) AS avg_total,
+			SUM(s.price_sale) OVER(PARTITION BY STRFTIME('%Y-%m', s.date_sale)) AS sum_total,
+			SUM(s.price_sale) OVER(ORDER BY STRFTIME('%Y-%m', s.date_sale)) AS running_total,
+			COUNT(s.sales_id) OVER(PARTITION BY STRFTIME('%Y-%m', s.date_sale)) AS count_sales
+	FROM sales s)
+SELECT *
+FROM monthly_sales
+GROUP BY "year_month";
+---- Option 2: NESTED
+SELECT year_month, max_total, avg_total,  sum_total, sum(sum_total) OVER(ORDER BY year_month) AS running_total, count_sales
+FROM (SELECT 
+			STRFTIME('%Y-%m', s.date_sale) AS year_month,
+			SUM(s.price_sale) AS sum_total,
+			MAX(s.price_sale) AS max_total,
+			ROUND(AVG(s.price_sale),0) AS avg_total,
+			COUNT(s.sales_id) AS count_sales
+		FROM sales s
+		GROUP BY year_month);
+
+
+--- 8) On which day did I reach my first 100 CHF?
+WITH sales_by_day AS (
+	SELECT 
+		STRFTIME('%Y-%m-%d', s.date_sale) AS "day_sale",
+		SUM(s.price_sale) OVER(PARTITION BY STRFTIME('%Y-%m-%d', s.date_sale)) AS "daily_total",
+		SUM(s.price_sale) OVER(ORDER BY STRFTIME('%Y-%m-%d', s.date_sale)) AS "running_total"
+	FROM sales s)
+SELECT *
+FROM sales_by_day
+GROUP BY "day_sale"
+HAVING running_total > 100
+LIMIT 1;
+
+--- 9) Who are the top 5 user with highest sales?
+SELECT u.user_name AS "Buyer", s.price_sale AS "Turnover"
+FROM sales s
+INNER JOIN user_table u ON s.fk_user_table = u.user_id 
+ORDER BY s.price_sale DESC
+LIMIT 5;
+
+--- 10) Who are the users that bought stuff in July and spent more than 15 CHF? Order by spending amount.
+---- Option 1:
+SELECT s.date_sale AS "Date", u.user_name AS "Buyer", s.price_sale AS "Turnover", ifs.description_short AS "Items"
+FROM sales s
+INNER JOIN user_table u ON s.fk_user_table = u.user_id 
+INNER JOIN item_for_sale ifs ON s.sales_id  = ifs.fk_sales 
+WHERE s.price_sale > 15
+AND s.date_sale BETWEEN "2021-07-01" AND "2021-07-14"
+ORDER BY s.price_sale DESC;
+---- Option 2: What did the users that bought stuff in the first two weeks of July and spent more than 15 CHF buy?
+SELECT *
+FROM item_for_sale ifs 
+WHERE ifs.fk_sales IN (
+	SELECT s.sales_id
+	FROM sales s
+	WHERE s.date_sale BETWEEN "2021-07-01" AND "2021-07-14"
+	AND s.price_sale > 15);
+--- Option 3: What did the user (first in alphabetical order) buy in first 2 weeks of July and that spent more than 15 CHF?
+SELECT *
+FROM item_for_sale ifs 
+WHERE ifs.fk_sales IN (
+	SELECT s.sales_id
+	FROM sales s
+	WHERE s.date_sale BETWEEN "2021-07-01" AND "2021-07-14"
+	AND s.fk_user_table IN (
+		SELECT u.user_id
+		FROM user_table u
+		ORDER BY u.user_name ASC
+		LIMIT 1)
+	AND s.price_sale > 15);	
+
+--- 11) Are there any users who bought items on different dates?
+SELECT u.*, COUNT(s.sales_id) AS "number of sales"
+FROM user_table u 
+JOIN sales s On s.fk_user_table = u.user_id 
+GROUP BY s.sales_id
+ORDER BY "number of sales" DESC, u.user_name ASC 
+LIMIT 5;
+----> no user has bought on different occasions
+
+--- 12) How much did we earn vs. expectation in total?
+WITH 
+sale AS (
+	SELECT SUM (s.price_sale), "realized" price
+	FROM sales s),
+offer AS (
+	SELECT SUM (ifs.price_offered), "as offered" price 
+	FROM item_for_sale ifs
+	WHERE ifs.fk_sales != "")
+SELECT *
+FROM sale 
+UNION ALL
+SELECT *
+FROM offer;
+	
+---13) When was the longest time without a sale, in days?
+WITH day_diff AS(
+	SELECT LAG(date_sale) OVER(ORDER BY sales_id ROWS 1 PRECEDING) AS "previous_sale", date_sale
+	FROM sales s)
+SELECT *, JULIANDAY(date_sale) - JULIANDAY(previous_sale) AS "no_of_days"
+FROM day_diff 
+ORDER by no_of_days DESC
+LIMIT 1;
+
+---14) Which was the second highest sale?
+---- Option A:
+SELECT sales_id, price_sale
+FROM (SELECT DISTINCT sales_id, price_sale
+	FROM sales s 
+	ORDER BY price_sale DESC
+	LIMIT 1 OFFSET 1) as second_highest
+LIMIT 1;
+--- Option B:
+SELECT sales_id, MAX(price_sale)
+FROM sales s 
+WHERE price_sale != (SELECT MAX(price_sale) FROM sales s)
+LIMIT 1;
+
+---15) What are the highest Sale by platform?
+SELECT platform_name, s.price_sale, s.date_sale 
+FROM sales s 
+JOIN platform_sold ps ON ps.platform_id = s.fk_platform 
+WHERE (s.fk_platform , s.price_sale)
+	IN (SELECT s.fk_platform , MAX(s.price_sale)
+	FROM sales s
+	GROUP BY s.fk_platform);
+
+---16) Do I have duplicate buyers?
+---- Option A
+SELECT user_name 
+FROM (SELECT user_name, count(user_name) as "frequency"
+		FROM user_table ut 
+		GROUP BY user_name)
+WHERE frequency > 1;
+---- Option B
+SELECT user_name, count(user_name) as "frequency"
+FROM user_table ut 
+GROUP BY user_name 
+HAVING count(user_name) >1;
+
+

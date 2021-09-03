@@ -1,0 +1,355 @@
+-----------------------------------------------
+-- MILESTONE 2 - Various updates to database --
+-----------------------------------------------
+
+-- A) update latest sales
+---- A: sold the Braun Silk epil to tisch on 16.7. for 30 CHF on anibis
+---- B: sold the Isolationsmatratze to mark-h on 16.7. for 20 CHF on anibis (post-delivery)
+---- C: sold red hand bag 'Handtasche 1' to Ida on 16.7. for 5 CHF on FB_Marketplace 
+---- D: sold 3 handbags 'Handtasche 2', 'Handtasche 2' and 'Handtasche 4' to AdrianaCev on 16.7. for 20 CHF (nr 4 for free) on FB_group
+---- E: sold Glasuntersetzer for 3 CHF, 6 wineglases for 6 CHF and 6 glasses for 6 CHF on 19.7. to Angel on anibis
+
+--- 1) get item_id
+SELECT description_short, item_id 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%silk%" OR description_short LIKE "%BRAUN%";
+--> RESULT A: item_id 281
+
+SELECT description_short, item_id 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Isolation%";
+--> RESULT B: item_id 9
+
+SELECT description_short, description_long, item_id 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Handtasche%" AND description_long LIKE "%rot%";
+--> RESULT C: item_id 296
+
+SELECT description_short, description_long, item_id 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Handtasche%";
+--> RESULT D: item_id 297, 298, 299
+
+SELECT description_short, description_long, item_id 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Glasuntersetzer%" OR description_short LIKE "%Weingläser%" OR description_short LIKE "%Gläser%";
+--> RESULT E: item_id 279, 280, 300, 301
+
+--- 2) Create a new user if necessary
+INSERT INTO user_table ("user_name")
+VALUES
+("tischa"),
+("mark-h"),
+("Ida"),
+("AdrianaCev"),
+("Angel");
+
+--- 3) Register sales
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES
+("16.07.2021","30.00","3","1","15"),
+("16.07.2021", "20.00","3","2","16"),
+("16.07.2021", "5.00","2","2","17"),
+("16.07.2021", "20.00","3","2","18"),
+("19.07.2021", "19.00","3","2","19");
+
+--- 4) update list of items - status sold
+UPDATE item_for_sale
+SET fk_status = 5
+WHERE item_id = 281 OR item_id = 9 OR item_id = 296 OR item_id = 297 OR item_id = 298 OR item_id = 299 OR item_id = 279
+OR item_id =  280 OR item_id = 300 OR item_id = 301;
+
+--- 5) update list of items - fk_sales
+UPDATE item_for_sale
+SET fk_sales = 15
+WHERE item_id = 281;
+
+UPDATE item_for_sale
+SET fk_sales = 16
+WHERE item_id = 9;
+
+UPDATE item_for_sale
+SET fk_sales = 17
+WHERE item_id = 296;
+
+UPDATE item_for_sale
+SET fk_sales = 18
+WHERE item_id = 297 OR item_id = 298 OR item_id = 299;
+
+UPDATE item_for_sale
+SET fk_sales = 19
+WHERE item_id = 279 OR item_id = 280 OR item_id = 300 OR item_id = 301;
+
+--- 6) show list of updated items
+SELECT description_short, description_long, item_id, fk_status, fk_sales 
+FROM item_for_sale ifs 
+WHERE  item_id = 281 OR item_id = 9 OR item_id = 296 OR item_id = 297 OR item_id = 298 OR item_id = 299 OR item_id = 279
+OR item_id =  280 OR item_id = 300 OR item_id = 301;
+
+
+-- B) Update storage location of 'Matratzenschoner 2 from Box 10 to Box 21
+--- 1) check for item
+SELECT description_short, item_id, fk_storage 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Matratzenschoner%" OR description_short LIKE "%weisse%";
+
+--- 2) Update storage location
+UPDATE item_for_sale
+SET fk_storage = 21
+WHERE item_id = 251;
+
+--- 3) check for item again
+SELECT description_short, item_id, fk_storage 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Matratzenschoner%" OR description_short LIKE "%weisse%";
+
+
+-- C) Add new item to list
+INSERT INTO	item_for_sale ("description_short","description_long","price_offered","fk_status","fk_storage","fk_sales")
+VALUES 
+("Brockhaus","5 Bände, 2004"," 25.00 ","3","26","");
+
+
+-- D) DATETIME as it hasn't got the right format
+---> Let's change that
+
+--- 1) Get all the different date formats
+SELECT DISTINCT date_sale 
+FROM sales s;
+
+---for reference
+--"08.06.21"
+--"21.06.21"
+--"23.06.21"
+--"24.06.21"
+--"28.06.21"
+--"01.07.21"
+--"05.07.21"
+--"07.07.21"
+--"12.07.21"
+--"13.07.21"
+--"15.07.21"
+--"16.07.2021"
+--"19.07.2021"
+
+--- 2) Update them to correct format
+UPDATE sales 
+SET date_sale = "2021-06-08"
+WHERE date_sale = "08.06.21";
+
+UPDATE sales 
+SET date_sale = "2021-06-21"
+WHERE date_sale = "21.06.21";
+
+UPDATE sales 
+SET date_sale = "2021-06-23"
+WHERE date_sale = "23.06.21";
+
+UPDATE sales 
+SET date_sale = "2021-06-24"
+WHERE date_sale = "24.06.21";
+
+UPDATE sales 
+SET date_sale = "2021-06-28"
+WHERE date_sale = "28.06.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-01"
+WHERE date_sale = "01.07.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-05"
+WHERE date_sale = "05.07.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-07"
+WHERE date_sale = "07.07.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-12"
+WHERE date_sale = "12.07.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-13"
+WHERE date_sale = "13.07.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-15"
+WHERE date_sale = "15.07.21";
+
+UPDATE sales 
+SET date_sale = "2021-07-16"
+WHERE date_sale = "16.07.2021";
+
+UPDATE sales 
+SET date_sale = "2021-07-19"
+WHERE date_sale = "19.07.2021";
+
+SELECT DISTINCT date_sale 
+FROM sales s;
+
+-- E) Update latest changes
+--- 1) get item_id
+--- 2) Create a new user if necessary
+--- 3) Register sales
+--- 4) update list of items - status sold
+--- 5) update list of items - fk_sales
+--- 6) show list of updated items
+------------------
+--- 1) get item_id
+SELECT description_short, item_id, fk_storage, fk_status 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Kabel%" OR description_short LIKE "%DVD%";
+----> Box 6, item_id 33
+SELECT description_short, item_id, fk_storage, fk_status 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Grill%" OR description_short LIKE "%BBQ%";
+----> Box 17, item_id 117
+SELECT description_short, item_id, fk_storage, fk_status 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%pese%" OR description_short LIKE "%Waage%";
+----> Box 11, item_id 98
+--- 2) Create a new user if necessary
+INSERT INTO user_table ("user_name")
+VALUES ("Eni_G");
+--- 3) Register sales
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-07-29","10.00","3","1","20");
+--- 4) update list of items - status sold
+UPDATE item_for_sale
+SET fk_status = 5
+WHERE item_id = 98;
+--- 5)  update list of items - fk_sales
+UPDATE item_for_sale
+SET fk_sales = 20
+WHERE item_id = 98;
+--- look at sales
+SELECT *
+FROM sales;
+
+------
+--- 2) Create a new user if necessary
+INSERT INTO user_table ("user_name")
+VALUES ("Karin Fata");
+--- 3) Register sales
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-07-29","2.00","1","1","21");
+--- 4) update list of items - status sold
+UPDATE item_for_sale
+SET fk_status = 5
+WHERE item_id = 33;
+--- 5) update list of items - fk_sales
+--- look at sales
+SELECT *
+FROM sales;
+-- update
+UPDATE item_for_sale
+SET fk_sales = 21
+WHERE item_id = 33;
+
+------
+--- 1) get item_id
+SELECT description_short, item_id, fk_storage, fk_sales, fk_status 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%sac%" OR description_short;
+----> Box 18, Item_id = 203, 204, 205, 206
+--- 2) Create a new user if necessary
+INSERT INTO user_table ("user_name")
+VALUES ("Indio");
+--- 3) Register sales
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-07-29","44.00","1","1","22");
+--- 4) update list of items - status sold
+UPDATE item_for_sale
+SET fk_status = 5
+WHERE item_id = 203 OR item_id = 204 OR item_id = 205 OR item_id = 206;
+--- 5) update list of items - fk_sales
+--- look at sales
+SELECT *
+FROM sales;
+-- update
+UPDATE item_for_sale
+SET fk_sales = 22
+WHERE item_id = 203 OR item_id = 204 OR item_id = 205 OR item_id = 206;
+------
+
+--- 1) get item_id
+SELECT description_short, item_id, fk_storage, fk_sales, fk_status 
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%cocktail%" OR description_short LIKE "%avoca%" 
+OR description_short LIKE "%Besteck%" OR description_short LIKE "%Waage%" ;
+----> Box 12: 122, 126
+----> Box 13: 135
+--- 2) Create a new user if necessary
+INSERT INTO user_table ("user_name")
+VALUES ("levy");
+--- look at user
+SELECT *
+FROM user_table ut ;
+--- 3) Register sales
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-08-05","12.00","1","1","23");
+--- 4) update list of items - status sold
+UPDATE item_for_sale
+SET fk_status = 5
+WHERE item_id = 122 OR item_id = 126 OR item_id = 135 ;
+--- 5) update list of items - fk_sales
+--- look at sales
+SELECT *
+FROM sales;
+--- update 
+UPDATE item_for_sale
+SET fk_sales = 23
+WHERE item_id = 122 OR item_id = 126 OR item_id = 135 ;
+------
+
+INSERT INTO user_table ('user_name')
+VALUES ('manuel_c');
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-08-05","34","3","1","25");
+INSERT INTO item_for_sale (description_short ,description_long ,price_offered ,fk_status, fk_storage, fk_sales)
+VALUES ("Kleidung Paket 1", "T-Shirts, Wäsche, Gürtel","40.00","5","27","25");
+-------
+
+INSERT INTO user_table ('user_name')
+VALUES ('norber');
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-08-09","5.00","1","1","26");
+SELECT description_short, item_id, fk_storage, fk_sales, fk_status, price_offered
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Lade%" OR description_short LIKE "%batterie%";
+--> item_id 76, box 7
+SELECT *
+FROM sales s 
+WHERE date_sale = "2021-08-09";
+--> sales_id = 26
+UPDATE item_for_sale
+SET fk_status = 5, fk_sales = 26
+WHERE item_id = 76 ;
+SELECT *
+FROM item_for_sale ifs 
+WHERE item_id = 76;
+------
+
+
+INSERT INTO user_table ('user_name')
+VALUES ('abird');
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES ("2021-08-17","15.00","3","1","27");
+SELECT description_short, item_id, fk_storage, fk_sales, fk_status, price_offered
+FROM item_for_sale ifs 
+WHERE description_short LIKE "%Überdecke%";
+--> item_id 252, box 21
+SELECT *
+FROM sales s 
+WHERE date_sale = "2021-08-17";
+--> sales_id = 27
+UPDATE item_for_sale
+SET fk_status = 5, fk_sales = 27
+WHERE item_id = 252 ;
+SELECT *
+FROM item_for_sale ifs 
+WHERE item_id = 252;
+------
+
+

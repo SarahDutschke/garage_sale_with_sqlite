@@ -1,0 +1,496 @@
+-------------------------------------------------------
+-- MILESTONE 1 - Create database and fill in content --
+-------------------------------------------------------
+
+--- 1) create all necessary tables
+
+CREATE TABLE "storage" (
+    "storage_id" integer PRIMARY KEY AUTOINCREMENT,
+    "storage_location" text,
+    "storage_type" text);
+
+CREATE TABLE "platform_sold" (
+    "platform_id" integer PRIMARY KEY AUTOINCREMENT,
+    "platform_name" text);
+
+CREATE TABLE "type_of_sale" (
+    "type_of_sale_id" integer PRIMARY KEY AUTOINCREMENT,
+    "type_of_sale_name" text);
+
+CREATE TABLE "status" (
+    "status_id" integer PRIMARY KEY AUTOINCREMENT,
+    "status" text);
+
+CREATE TABLE "sales" (
+    "sales_id" integer PRIMARY KEY AUTOINCREMENT,
+    "date_sale" datetime,
+    "price_sale" real,
+    "fk_platform" INTEGER NOT NULL REFERENCES "platform_sold" ("platform_id") ON DELETE CASCADE,
+    "fk_type_of_sale" INTEGER NOT NULL REFERENCES "type_of_sale" ("type_of_sale_name") ON DELETE CASCADE,
+    "fk_user_table" INTEGER NOT NULL REFERENCES "user_table" ("user_id") ON DELETE CASCADE);
+
+CREATE TABLE "item_for_sale" (
+    "item_id" integer PRIMARY KEY AUTOINCREMENT,
+    "description_short" text UNIQUE NOT NULL,
+    "description_long" text,
+    "price_offered" real,
+    "fk_status" INTEGER NOT NULL REFERENCES "status" ("status_id") ON DELETE CASCADE,
+    "fk_storage" INTEGER NOT NULL REFERENCES "storage" ("storage_id") ON DELETE CASCADE,
+    "fk_sales" INTEGER NOT NULL REFERENCES "sales" ("sales_id") ON DELETE CASCADE);
+
+CREATE TABLE "user" (
+    "user_id" integer PRIMARY KEY AUTOINCREMENT,
+    "user_name" text,
+    "fk_sales" INTEGER NOT NULL REFERENCES "sales" ("sales_id") ON DELETE CASCADE);
+
+CREATE TABLE "user_table" (
+    "user_id" integer PRIMARY KEY AUTOINCREMENT,
+    "user_name" text);
+
+--- 2) insert values for storage, platform, status and type of sale tables.
+
+INSERT INTO	"storage" ("storage_location", "storage_type")
+VALUES 
+("basement", "box"),
+("apartment", "box"),
+("garage", "box"),
+("basement", "outside"),
+("apartment", "outside"),
+("garage", "outside");
+
+INSERT INTO	"platform_sold" ("platform_name")
+VALUES 
+("FB_marketplace"),
+("FB_group"),
+("Anibis");
+
+INSERT INTO	"type_of_sale" ("type_of_sale_name")
+VALUES 
+("pick_up"),
+("post_delivery");
+
+INSERT INTO	"status" ("status")
+VALUES 
+("registered"),
+("photographed"),
+("online"),
+("pending"),
+("sold");
+
+
+--- 3) decided to reset the content of the storage table
+
+UPDATE storage 
+SET 
+    storage_location = 'apartment',
+    storage_type = 'small_box'
+WHERE
+    storage_id = 1;
+    
+UPDATE storage 
+SET 
+    storage_location = 'basement',
+    storage_type = 'big_box'
+WHERE
+    storage_id = 2;
+    
+UPDATE storage 
+SET 
+    storage_location = 'basement',
+    storage_type = 'small_box'
+WHERE
+    storage_id = 3;
+    
+UPDATE storage 
+SET 
+    storage_location = 'apartment',
+    storage_type = 'small_box'
+WHERE
+    storage_id = 4;
+
+UPDATE storage 
+SET 
+    storage_location = 'apartment',
+    storage_type = 'small_box'
+WHERE
+    storage_id = 5;
+    
+UPDATE storage 
+SET 
+    storage_location = 'apartment',
+    storage_type = 'small_box'
+WHERE
+    storage_id = 6;
+    
+--- 4) Insert remaining storage locations
+   
+INSERT INTO	"storage" ("storage_location", "storage_type")
+VALUES 
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","big_box"),
+("apartment","BRAUN_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("basement","big_box"),
+("apartment","medium_box"),
+("apartment","small_box"),
+("apartment","small_box"),
+("apartment","ikea_bag"),
+("apartment","clothes_rack"),
+("garage","no_container"),
+("apartment","no_container")
+;
+
+--- 5) insert values
+---- 5.1 list of all items with their current status 
+
+INSERT INTO	item_for_sale ("description_short","description_long","price_offered","fk_status","fk_storage","fk_sales")
+VALUES 
+("Hängematte","handgemacht"," 25.00 ","5","2","12"),
+("Schlafsack-Spiderman","für Kinder"," 10.00 ","3","21",""),
+("Picknickdecke","waschbar"," 5.00 ","5","2","7"),
+("Stranddecke","praktisch"," 5.00 ","5","2","4"),
+("1xEinkaufstrolleys","schwarz wie neu"," 25.00 ","5","2","4"),
+("1xEinkaufstrolleys Rucksack","praktisch auch als Rucksack nutzbar"," 25.00 ","3","2",""),
+("Bild","mit leichten Gebrauchsspuren"," 10.00 ","3","2",""),
+("Garderobe","simpel und praktisch"," 25.00 ","3","2",""),
+("Isolationsmatratze","Als Bettauflage oder zur Isolierung nutzbar"," 15.00 ","4","2",""),
+("Küchenmaschine Vitalcenter 4in1 Endsaften / Hacken / Mahlen / Mixen neu",""," 40.00 ","3","3",""),
+("Schuhe 1","schwarz wie neu"," 5.00 ","3","4",""),
+("Schuhe 2","rot"," 5.00 ","3","4",""),
+("Schuhe 3","beige"," 5.00 ","3","4",""),
+("Schuhe 4","Pump"," 5.00 ","3","4",""),
+("Schuhe 5",""," 5.00 ","3","4",""),
+("Schuhe 6",""," 5.00 ","3","4",""),
+("Schuhe 7",""," 5.00 ","3","4",""),
+("Cross Schreibset silber","elegant nie benutzt"," 25.00 ","5","5","13"),
+("Cross Schreibset schwarz","elegant"," 25.00 ","5","5","13"),
+("Büromaterial",""," 10.00 ","3","5",""),
+("Taschenrechner",""," 10.00 ","3","5",""),
+("Verlängerungskabel 1",""," 3.00 ","3","6",""),
+("Verlängerungskabel 2",""," 3.00 ","3","6",""),
+("Verlängerungskabel Mehrfachstecker 1","mit "," 3.00 ","3","6",""),
+("Verlängerungskabel Mehrfachstecker 2",""," 3.00 ","3","6",""),
+("HDMI Kabel",""," 3.00 ","3","6",""),
+("HDMI Mini Display port Kabel",""," 3.00 ","3","6",""),
+("LAN Kabel 1",""," 2.00 ","3","6",""),
+("LAN Kabel 2",""," 2.00 ","3","6",""),
+("LAN Kabel 3",""," 2.00 ","3","6",""),
+("LAN Kabel 4",""," 2.00 ","3","6",""),
+("LAN Kabel 5",""," 2.00 ","3","6",""),
+("Scart Kabel 1",""," 2.00 ","3","6",""),
+("Scart Kabel 2",""," 2.00 ","3","6",""),
+("Scart Kabel 3",""," 2.00 ","3","6",""),
+("Scart Kabel 4",""," 2.00 ","3","6",""),
+("Scart Kabel 5",""," 2.00 ","3","6",""),
+("TV Kabel 1",""," 1.00 ","3","6",""),
+("TV Kabel 2",""," 1.00 ","3","6",""),
+("TV Kabel 3",""," 1.00 ","3","6",""),
+("TV Kabel 4",""," 1.00 ","3","6",""),
+("TV Kabel 5",""," 1.00 ","3","6",""),
+("Telefon Kabel 1",""," 2.00 ","3","6",""),
+("Telefon Kabel 2",""," 2.00 ","3","6",""),
+("Laptop Ladekabel 1",""," 5.00 ","3","6",""),
+("Laptop Ladekabel 2",""," 5.00 ","3","6",""),
+("Router mit Kabeln",""," 5.00 ","3","6",""),
+("DVD Player",""," 30.00 ","4","7",""),
+("USB Key 1",""," 0.50 ","3","7",""),
+("USB Key 2",""," 0.50 ","3","7",""),
+("USB Key 3",""," 0.50 ","3","7",""),
+("USB Key 4",""," 0.50 ","3","7",""),
+("USB Key 5",""," 0.50 ","3","7",""),
+("USB Key 6",""," 1.00 ","3","7",""),
+("USB Key 7",""," 1.00 ","3","7",""),
+("USB Key 8",""," 1.00 ","3","7",""),
+("USB Key 9",""," 2.00 ","3","7",""),
+("USB Key 10",""," 2.00 ","3","7",""),
+("USB Key 11",""," 2.00 ","3","7",""),
+("USB Key 12",""," 2.00 ","3","7",""),
+("SD Karte 1",""," 0.50 ","3","7",""),
+("SD Karte 2",""," 0.50 ","3","7",""),
+("Handyhülle",""," 3.00 ","3","7",""),
+("Kopfhörer 1",""," 2.00 ","3","7",""),
+("Kopfhörer 2",""," 2.00 ","3","7",""),
+("Kopfhörer 3",""," 2.00 ","3","7",""),
+("Kopfhörer 4",""," 4.00 ","3","7",""),
+("Kopfhörer 5",""," 4.00 ","3","7",""),
+("Kopfhörer 6",""," 4.00 ","3","7",""),
+("Wecker",""," 2.00 ","3","7",""),
+("Kassettenadapter",""," 5.00 ","3","7",""),
+("Mehrfach USB Stecker",""," 2.00 ","3","7",""),
+("USB Lampe",""," 2.00 ","3","7",""),
+("USB Staubsauger",""," 3.00 ","3","7",""),
+("Micro USB Ladegerät",""," 2.00 ","3","7",""),
+("Aufladegerät Duracell ",""," 5.00 ","3","7",""),
+("Aufladegerät Varta ",""," 5.00 ","3","7",""),
+("Maus HAMA",""," 5.00 ","3","7",""),
+("Radiogerät",""," 5.00 ","3","7",""),
+("CD's",""," 5.00 ","3","8",""),
+("Kassetten",""," 5.00 ","3","8",""),
+("DVDs",""," 5.00 ","3","8",""),
+("Playboy Lampe",""," 10.00 ","3","9",""),
+("IKEA Wandlampe",""," 5.00 ","3","9",""),
+("Mann-Frau Kleiderhaken",""," 5.00 ","3","9",""),
+("Handtuchhalter",""," 3.00 ","3","9",""),
+("Fahrradhelm",""," 5.00 ","5","9","8"),
+("Schlafsack-inlay",""," 5.00 ","5","10","7"),
+("Unterwäsche",""," 5.00 ","3","10",""),
+("Socken",""," 5.00 ","3","10",""),
+("Spanische Flaggen",""," 10.00 ","5","10","2"),
+("Bettbezug Grün blau",""," 10.00 ","3","11",""),
+("Bettbezug lila grün",""," 10.00 ","5","11","4"),
+("Münze",""," 45.00 ","3","11",""),
+("Münzen",""," 15.00 ","5","11","3"),
+("Kissen",""," 7.00 ","3","11",""),
+("Tischläufer asiatisch",""," 15.00 ","5","11","5"),
+("Personenwaage","rosa1"," 10.00 ","3","11",""),
+("Schweizer Glocke Schlüsselband",""," 3.00 ","3","11",""),
+("Rote Tischsets",""," 12.00 ","3","11",""),
+("Kaffeebox",""," 3.00 ","3","12",""),
+("Kleines Einmachglas",""," 2.00 ","3","12",""),
+("Kühltupperschale",""," 5.00 ","5","12","4"),
+("Pfanne",""," 3.00 ","3","12",""),
+("Bambusschale",""," 2.00 ","4","12",""),
+("Holzschale",""," 2.00 ","3","12",""),
+("Ananasdrinks",""," 5.00 ","3","12",""),
+("Thermosflasche",""," 3.00 ","3","12",""),
+("Trinkflasche 1",""," 3.00 ","3","12",""),
+("Trinkflasche 2",""," 3.00 ","3","12",""),
+("Trinkflasche 3",""," 3.00 ","3","12",""),
+("Messerblock",""," 5.00 ","3","12",""),
+("CD's2",""," 5.00 ","3","8",""),
+("Kassetten2",""," 5.00 ","3","8",""),
+("DVDs2",""," 5.00 ","3","8",""),
+("Asiatische Thermo",""," 3.00 ","3","12",""),
+("Grillbesteck",""," 10.00 ","5","12","6"),
+("Tellerhalter",""," 4.00 ","3","12",""),
+("Abtropfhalter",""," 3.00 ","5","12","4"),
+("Teeservice",""," 5.00 ","5","12","4"),
+("Küchenreibe",""," 5.00 ","3","12",""),
+("Küchenwaage",""," 5.00 ","3","12",""),
+("2x Besteckkästen",""," 2.00 ","3","12",""),
+("Äppelwoi Bembel ",""," 5.00 ","3","12",""),
+("Donald-Schale",""," 2.00 ","3","12",""),
+("Avocado Schneider",""," 3.00 ","3","12",""),
+("Mini Salatbesteck",""," 2.00 ","3","12",""),
+("Schallplattenschale",""," 15.00 ","3","12",""),
+("Serviettenhalter",""," 4.00 ","3","12",""),
+("Magnifique verre de Martini / verre de cocktail – vert",""," 5.00 ","3","12",""),
+("Joli verre coloré – bleu ",""," 4.00 ","3","12",""),
+("Thermobecher 1",""," 5.00 ","3","13",""),
+("Thermobecher 2",""," 5.00 ","3","13",""),
+("3x Aufbewahrungsglas",""," 3.00 ","3","13",""),
+("Cocktailmixset",""," 5.00 ","3","13",""),
+("Flachmann Gargellen",""," 3.00 ","3","13",""),
+("Besteck schwarz",""," 5.00 ","3","13",""),
+("Besteck grün",""," 5.00 ","3","13",""),
+("KusmiTeeBoxen",""," 5.00 ","3","13",""),
+("Metalltasse - GinTonic Becher",""," 5.00 ","3","13",""),
+("MiniFondue Set",""," 5.00 ","3","13",""),
+("Milchschäumer",""," 3.00 ","3","13",""),
+("Multiquick Zubehör",""," 55.00 ","3","14",""),
+("Seaux de poubelle noir",""," 3.00 ","3","14",""),
+("Ampoules IKEA E27","6x 600 Lumen 11 W classe énergie A"," 6.00 ","3","14",""),
+("Lampe halogène","variable blanc chaud classe énergie B 37kWh 430 lumens GU5.3"," 5.00 ","3","14",""),
+("Butée de porte",""," 2.00 ","3","14",""),
+("4x poignées de tiroir rouges IKEA (4 CHF)",""," 4.00 ","3","14",""),
+("Outil multifonction","pince (5 CHF)"," 5.00 ","3","14",""),
+("Porte-pelle/porte-balai"," 35.5 x 10.5 x 8.5cm (3 CHF)"," 3.00 ","3","14",""),
+("Türwischer Raclette de douche / raclette pour vitres",""," 5.00 ","3","14",""),
+("Herzdose",""," 3.00 ","3","15",""),
+("Spiegeluntersetzer",""," 5.00 ","3","15",""),
+("Bilderrahmen 1","Glas 1"," 2.00 ","3","15",""),
+("Bilderrahmen 2","Glas 2"," 2.00 ","3","15",""),
+("Bilderrahmen 3","4x Blau"," 10.00 ","3","15",""),
+("Bilderrahmen 4","2x Braun"," 5.00 ","3","15",""),
+("Bilderrahmen 5","1x rot"," 3.00 ","3","15",""),
+("2x Postkartenhalter einzeln",""," 2.00 ","3","15",""),
+("Sternanhänger",""," 4.00 ","3","15",""),
+("Kopfmassage",""," 4.00 ","5","15","10"),
+("Holzfächer",""," 5.00 ","3","15",""),
+("Handtaschenhalter #2",""," 5.00 ","3","15",""),
+("Standuhr mit Bilderrahmen",""," 5.00 ","3","15",""),
+("Japanischer Sonnenschirm",""," 10.00 ","3","15",""),
+("Deko-Essstäbchenset",""," 20.00 ","3","15",""),
+("Teelichthalter 1","Leonardo dunkelblau"," 5.00 ","3","15",""),
+("Teelichthalter 2","weiss"," 5.00 ","3","15",""),
+("Teelichthalter 3","aqua"," 5.00 ","3","15",""),
+("Teelichthalter 4","Vögelchen"," 5.00 ","3","15",""),
+("Diverse Kerzen",""," 15.00 ","3","15",""),
+("Mehrfacher Photo/Postkartenhalter",""," 5.00 ","3","15",""),
+("Sahara Wüstenvase",""," 10.00 ","3","15",""),
+("Asiatisches rote Türdeko Anhänger",""," 10.00 ","3","15",""),
+("Taschentuchuberzug",""," 10.00 ","3","15",""),
+("Schieferherz",""," 3.00 ","3","15",""),
+("Gelbes Kleeblattuntersetzer",""," 3.00 ","3","15",""),
+("Pillendosen",""," 10.00 ","3","16",""),
+("Schmuckkästchen 1","beige"," 5.00 ","3","16",""),
+("Schmuckkästchen 2","beige"," 5.00 ","3","16",""),
+("Schmuckkästchen 3","rot asiatisch"," 7.00 ","3","16",""),
+("Schmuckkästchen 4","schwarz aus Samt"," 7.00 ","3","16",""),
+("Necessaire 1","blanc"," 5.00 ","3","16",""),
+("Necessaire 2","blanc"," 5.00 ","3","16",""),
+("Necessaire 3","scharz mit Henkel"," 7.00 ","3","16",""),
+("Necessaire 4","schwarz einfach"," 4.00 ","3","16",""),
+("Necessaire 5","rosa mit vielen Taschen"," 10.00 ","3","16",""),
+("Täschchen 1","noir avec décoration florale"," 5.00 ","3","16",""),
+("Täschchen 2","beige avec décoration florale"," 4.00 ","3","16",""),
+("Täschchen 3","blanc avec paillettes"," 4.00 ","3","16",""),
+("Täschchen 4","marron orné"," 3.00 ","3","16",""),
+("Täschchen 5","gris en feutre pour proteger le portable"," 4.00 ","3","16",""),
+("Schmucktäschchen schwarz-weiss",""," 15.00 ","3","16",""),
+("Schmuck (Ohrringe Ketten Broschen Uhren)",""," 120.00 ","3","16",""),
+("Uhren",""," 5.00 ","3","16",""),
+("Wimpernzange",""," 3.00 ","3","16",""),
+("Taschenspiegel",""," 3.00 ","3","16",""),
+("Maniküre / Pediküre Sets schwarz",""," 5.00 ","3","16",""),
+("Maniküre / Pediküre Sets"," elektrisch"," 20.00 ","3","16",""),
+("Grill mit Isolierkammer",""," 25.00 ","3","17",""),
+("2 x Lichterketten Feder",""," 10.00 ","3","17",""),
+("1 x Lichterkette rot",""," 3.00 ","3","17",""),
+("Rucksack 1","Escape"," 15.00 ","3","18",""),
+("Rucksack 2","Burton"," 10.00 ","3","18",""),
+("Rucksack 3","blau"," 15.00 ","3","18",""),
+("Rucksack 4","Schwarz-weiss"," 15.00 ","3","18",""),
+("Rollo","hellgrün"," 25.00 ","3","19",""),
+("Schuhregal (17CHF) Rangement chaussures (17 CHF)",""," 17.00 ","3","19",""),
+("Kleiderstange barre extensible jusqu’à 120 cm"," dorée "," 7.00 ","3","19",""),
+("Kleine IKEA Standlampe (2 m câble)","hauteur 70cm"," 10.00 ","3","19",""),
+("Lampe suspendue avec 5 abats-jour sphérique (45 CHF)",""," 45.00 ","3","19",""),
+("IKEA Standlampe 173cm",""," 10.00 ","5","19","9"), 
+("Mystery Rummy",""," 10.00 ","3","20",""),
+("Klartext",""," 15.00 ","3","20",""),
+("Activity",""," 10.00 ","3","20",""),
+("Activity Club-Edition",""," 10.00 ","3","20",""),
+("Superpoly Espagne",""," 15.00 ","3","20",""),
+("Therapy",""," 15.00 ","3","20",""),
+("Memory – Marken des Jahrhunderts",""," 10.00 ","3","20",""),
+("Reisespiel Poker",""," 10.00 ","3","20",""),
+("Reisespiel Mühle ",""," 10.00 ","3","20",""),
+("Reisespiel Schach",""," 10.00 ","3","20",""),
+("Kartenspiel 1","Bayern"," 2.00 ","3","20",""),
+("Kartenspiel 2","Skat"," 2.00 ","3","20",""),
+("Kartenspiel 3","Politikerskat"," 2.00 ","3","20",""),
+("Kartenspiel 4","James Bond 1"," 2.00 ","3","20",""),
+("Kartenspiel 5","James Bond 2"," 2.00 ","3","20",""),
+("Kartenspiel 6","Bayern"," 2.00 ","3","20",""),
+("Kartenspiel 7","Phase 10"," 2.00 ","3","20",""),
+("Kartenspiel 8","Magic"," 2.00 ","3","20",""),
+("Kartenspiel 9","Bridge"," 2.00 ","3","20",""),
+("Kartenspiel 10","Skat "," 2.00 ","3","20",""),
+("Kartenspiel 11","Sweden"," 2.00 ","3","20",""),
+("Kartenspiel 12","Philadelphia"," 2.00 ","3","20",""),
+("Denkspiel Holz",""," 5.00 ","3","20",""),
+("Minipuzzle Holz",""," 3.00 ","3","20",""),
+("Holzpuzzle",""," 3.00 ","3","20",""),
+("Geschicklichkeits-Cubes 2x",""," 5.00 ","3","20",""),
+("Geschicklichkeits-Square",""," 3.00 ","3","20",""),
+("Metall-Knobelei-Box 9x",""," 7.00 ","3","20",""),
+("Metall-Knobelei-Box 12x",""," 10.00 ","3","20",""),
+("Metall-Knobelei 3x",""," 5.00 ","3","20",""),
+("Labyrinth der Meister",""," 7.00 ","3","20",""),
+("Doppelt Gemoppelt – Doppelseitiges Puzzle 529 Teile",""," 10.00 ","3","20",""),
+("2 Murmeln",""," 2.00 ","3","20",""),
+("Gummi-Twist",""," 1.00 ","3","20",""),
+("Ente – Gans Kuscheltier",""," 10.00 ","3","20",""),
+("Rote Decke",""," 10.00 ","3","21",""),
+("Weisse Decke",""," 10.00 ","3","21",""),
+("Matratzenschoner 1","140x200cm"," 15.00 ","3","21",""),
+("Matratzenschoner 2","80x200 cm"," 10.00 ","1","10",""),
+("Überdecke","beige"," 15.00 ","3","21",""),
+("Ritzenhoff Glas",""," 45.00 ","3","12",""),
+("Wandbild Gusseisern",""," 28.00 ","3","15",""),
+("Gummistiefel","Hello Kitty"," 15.00 ","3","17",""),
+("4 Trinkgläser",""," 6.00 ","3","12",""),
+("Vorhang","rot Tüllstoff"," 10.00 ","3","11",""),
+("Blumentopf 1","klein 1"," 5.00 ","3","25",""),
+("Blumentopf 2","klein 2"," 5.00 ","3","25",""),
+("Blumentopf 3","klein 3"," 5.00 ","3","25",""),
+("Blumentopf 4","klein 4"," 5.00 ","3","25",""),
+("Blumentopf 5","klein 5"," 5.00 ","3","25",""),
+("Blumentopf 6","klein 6"," 5.00 ","3","25",""),
+("Blumentopf 7","klein 7"," 5.00 ","3","25",""),
+("Blumentopf 8","klein 8"," 5.00 ","3","25",""),
+("Blumentopf 9","gross 1"," 10.00 ","3","25",""),
+("Blumentopf 10","gross 2"," 10.00 ","3","25",""),
+("Blumentopf 11","gross 3"," 10.00 ","3","25",""),
+("Blumentopf 12","gross 4"," 10.00 ","3","25",""),
+("Blumentopf 13","gross 5"," 10.00 ","3","25",""),
+("Blumentopf 14","gross 6"," 10.00 ","3","25",""),
+("Blumentopf 15","gross 7"," 10.00 ","3","25",""),
+("Blumentopf 16","gross 8"," 10.00 ","3","25",""),
+("Blumentopf 17","gross 9"," 10.00 ","3","25",""),
+("Blumentopf 18","dunkelblau"," 20.00 ","3","25",""),
+("Giesskanne","gross rosa vintage"," 15.00 ","3","25",""),
+("Handyhülle mit Kartenfach","iphone 8"," 10.00 ","3","",""),
+("USB Feuerzeug",""," 3.00 ","3","",""),
+("Glasuntersetzer 1","Spanien"," 5.00 ","3","",""),
+("Glasuntersetzer 2","weiss"," 1.00 ","3","",""),
+("Braun Silk Epil",""," 33.00 ","3","9",""),
+("Bettrolle","mit 2 Bezügen"," 20.00 ","3","26",""),
+("Schaumstoffmatratze",""," 15.00 ","3","19",""),
+("Elephant",""," 15.00 ","3","26",""),
+("Merveilleux lustre avec trois ampoules (33 CHF)",""," 33.00 ","5","26","11"),
+("Handtaschenhalter",""," 10.00 ","3","23",""),
+("Aigner Handtasche",""," 100.00 ","3","23",""),
+("Geldbeutel 1","Tods"," 20.00 ","3","23",""),
+("Geldbeutel 2","Ralph Lauren"," 20.00 ","3","23",""),
+("Laptoptasche 1","mit Henkel"," 15.00 ","4","23","14"),
+("Laptoptasche 2","DELL"," 10.00 ","3","23",""),
+("Reisetasche Burton",""," 30.00 ","3","23",""),
+("Skischuhtasche",""," 10.00 ","3","23",""),
+("Korbsessel",""," 25.00 ","5","2","1"),
+("Handtasche 1","rot klein"," 5.00 ","3","23",""),
+("Handtasche 2","beige gross neu"," 15.00 ","3","23",""),
+("Handtasche 3","Esprit braun"," 5.00 ","3","23",""),
+("Handtasche 4","blau Seesack"," 5.00 ","3","23",""),
+("6x Weingläser","Geneve"," 6.00 ","3","26",""),
+("6x Gläser","Bunt"," 6.00 ","3","26","");
+
+---- 5.2 now fill the table of the sales
+INSERT INTO sales ("date_sale","price_sale","fk_platform","fk_type_of_sale","fk_user_table")
+VALUES
+("08.06.21"," 20.00 ","3","1","1"),
+("21.06.21"," 10.00 ","3","2","2"),
+("23.06.21"," 15.00 ","3","2","3"),
+("24.06.21"," 47.00 ","3","1","4"),
+("28.06.21"," 15.00 ","3","2","5"),
+("28.06.21"," 10.00 ","3","1","6"),
+("28.06.21"," 10.00 ","3","1","7"),
+("01.07.21"," 5.00 ","3","1","8"),
+("05.07.21"," 10.00 ","1","1","9"),
+("07.07.21"," 4.00 ","3","1","10"),
+("12.07.21"," 30.00 ","1","1","11"),
+("13.07.21"," 25.00 ","1","1","12"),
+("15.07.21"," 50.00 ","1","1","13"),
+("15.07.21"," 15.00 ","1","1","14");
+
+---- 5.3 fill user table
+INSERT INTO user_table ("user_name")
+VALUES
+("Cerise"),
+("Dylan"),
+("famwoo"),
+("carmen"),
+("Cosinus"),
+("THOMAS"),
+("chul-ho"),
+("bonafin"),
+("Ricky35"),
+("David"),
+("Kamile N. Reis"),
+("ABC"),
+("Marabi"),
+("Dimitiris L.");
+
+---> now the database is complete and contains the latest status
+
+

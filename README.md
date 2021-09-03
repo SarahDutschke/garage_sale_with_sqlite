@@ -50,4 +50,6 @@ Repository Structure
     ├── README.md               <- top-level README file for anybody interested in this project
     ├── data                    <- csv files, created based on each of the notebooks
     ├── pics                    <- jpegs and pngs for visualization of the readme
-    └── sql_garage_sale.sqlite  <- sqlite_file with 3 scripts for each Milestone.
+    ├── Milestone_1.txt         <- txt file containing the code for the first Milestone of the project
+    ├── Milestone_2.txt         <- txt file containing the code for the second Milestone of the project
+    └── Milestone_3.txt         <- txt file containing the code for the third  Milestone of the project.
