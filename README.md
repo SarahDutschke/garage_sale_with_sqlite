@@ -52,4 +52,5 @@ Repository Structure
     ├── pics                    <- jpegs and pngs for visualization of the readme
     ├── Milestone_1.txt         <- txt file containing the code for the first Milestone of the project
     ├── Milestone_2.txt         <- txt file containing the code for the second Milestone of the project
-    └── Milestone_3.txt         <- txt file containing the code for the third  Milestone of the project.
+    ├── Milestone_3.txt         <- txt file containing the code for the third Milestone of the project
+    └── sql_garage_sale.db      <- db file that contains the structure of the database.
